@@ -108,39 +108,76 @@ function relationArray(array) {
     }
     this.toArray = (matrix) => {
         this.array = [];
-        matrix.forEach((elem, indexY) => {
-            elem.forEach((element, indexX) => {
-                if (element == 1) {
-                    this.array.push([indexY, indexX]);
+        for (let j = 0; j < matrix.length; j++) {
+            for (let i = 0; i < matrix[0].length; i++) {
+                if (matrix[j][i] == 1) {
+                    this.array.push([i + 1, j + 1]);
                 }
-            });
-        });
+            }
+        }
+
     }
 }
 
-let matrixP =  [[1, 0, 0, 0, 0],
-                [0, 1, 1, 0, 0],
-                [0, 1, 0, 1, 0],
-                [0, 0, 1, 0, 1],
-                [0, 0, 0, 1, 0]],
+let matrixP = [[1, 0, 0, 0, 0],
+[0, 1, 1, 0, 0],
+[0, 1, 0, 1, 0],
+[0, 0, 1, 0, 1],
+[0, 0, 0, 1, 0]],
 
-    matrixQ =  [[0, 1, 0, 0, 0],
-                [0, 0, 0, 0, 0],
-                [0, 1, 0, 0, 0],
-                [0, 0, 0, 1, 0],
-                [0, 0, 1, 0, 0]],
+    matrixQ = [[0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0]],
 
-    matrixR =  [[0, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1],
-                [0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1],
-                [0, 0, 0, 1, 0]];
+    matrixR = [[0, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1],
+    [0, 0, 0, 1, 0]];
+
+
+console.log(`Матриця P`);
+console.log(matrixP);
+console.log(`Матриця Q`);
+console.log(matrixQ);
+console.log(`Матриця R`);
+console.log(matrixR);
 
 let matrix = new RelationMatrix();
 
+let arrayP = new relationArray();
+let arrayQ = new relationArray();
+let arrayR = new relationArray();
+let arrayResult = new relationArray();
+let date = new Date();
+let matrixTimeStart = date.getTime();
+
 let pAndQ = matrix.matrixComposition(matrixP, matrixQ);
-console.log(pAndQ);
+
 let d = matrix.matrixDuality(matrixR);
 
 let k = matrix.matrixDifference(pAndQ, d);
+let matrixTimeEnd = date.getTime();
+console.log(`Матриця, яка є результатом відношення`);
 console.log(k);
+
+console.log(`Час затрачений на виконання обчислень ${matrixTimeStart-matrixTimeEnd} мілісекунд`);
+
+arrayP.toArray(matrixP);
+arrayQ.toArray(matrixQ);
+arrayR.toArray(matrixR);
+matrixTimeStart = date.getTime();
+console.log(`Представлення матриці P у вигляді перетинів:`);
+console.log(arrayP.getArray());
+console.log(`Представлення матриці Q у вигляді перетинів:`);
+console.log(arrayQ.getArray());
+console.log(`Представлення матриці R у вигляді перетинів:`);
+console.log(arrayR.getArray());
+
+arrayResult.toArray(k);
+console.log(`Представлення результату у вигляді перетинів:`);
+console.log(arrayResult.getArray());
+matrixTimeEnd = date.getTime();
+console.log(`Час затрачений на виконання обчислень ${matrixTimeStart-matrixTimeEnd} мілісекунд`);
