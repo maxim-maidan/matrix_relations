@@ -1,3 +1,50 @@
+const getElementById = id => document.getElementById(id);
+const getValueById = id => getElementById(id).value;
+let matrixP = [], matrixQ = [], matrixR = [];
+function Matrix() {
+    this.P = [];
+    this.R = [];
+    this.Q = [];
+}
+let matrix = new Matrix();
+function generateWall() {
+    wallSize = getValueById('wallSize');
+    let tableP = ``, tableR = ``, tableQ = ``;
+    for (let j = 0; j < wallSize; j++) {
+        matrix.P.push([]);
+        matrix.Q.push([]);
+        matrix.R.push([]);
+        tableP += `<tr class="table__row"> \n`;
+        tableR += `<tr class="table__row"> \n`;
+        tableQ += `<tr class="table__row"> \n`;
+        for (let i = 0; i < wallSize; i++) {
+            matrix.P[j][i] = 0;
+            matrix.Q[j][i] = 0;
+            matrix.R[j][i] = 0;
+            tableP += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'P')" id="${j}-${i}-P"></td>`
+            tableR += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'R')" id="${j}-${i}-R"></td>`
+            tableQ += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'Q')" id="${j}-${i}-Q"></td>`
+        }
+        tableP += `</tr>`;
+        tableR += `</tr>`;
+        tableQ += `</tr>`;
+    }
+    getElementById('matrixP').innerHTML = tableP;
+    getElementById('matrixR').innerHTML = tableR;
+    getElementById('matrixQ').innerHTML = tableQ;
+}
+function setActiveElement(row, col, mat) {
+    const id = row + "-" + col + "-" + mat;
+    const classList = getElementById(id).classList;
+    if (Array.from(classList).includes("table__elem--active")) {
+        classList.remove("table__elem--active")
+        matrix[mat][row][col] = 0;
+    }
+    else {
+        classList.add('table__elem--active')
+        matrix[mat][row][col] = 1;
+    }
+}
 function RelationMatrix(matrix) {
     this.matrix = matrix;
 
@@ -119,65 +166,68 @@ function relationArray(array) {
     }
 }
 
-let matrixP = [[1, 0, 0, 0, 0],
-[0, 1, 1, 0, 0],
-[0, 1, 0, 1, 0],
-[0, 0, 1, 0, 1],
-[0, 0, 0, 1, 0]],
+// let matrixP = [[1, 0, 0, 0, 0],
+// [0, 1, 1, 0, 0],
+// [0, 1, 0, 1, 0],
+// [0, 0, 1, 0, 1],
+// [0, 0, 0, 1, 0]],
 
-    matrixQ = [[0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0],
-    [0, 0, 1, 0, 0]],
+//     matrixQ = [[0, 1, 0, 0, 0],
+//     [0, 0, 0, 0, 0],
+//     [0, 1, 0, 0, 0],
+//     [0, 0, 0, 1, 0],
+//     [0, 0, 1, 0, 0]],
 
-    matrixR = [[0, 1, 0, 0, 0],
-    [0, 0, 1, 1, 1],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1],
-    [0, 0, 0, 1, 0]];
+//     matrixR = [[0, 1, 0, 0, 0],
+//     [0, 0, 1, 1, 1],
+//     [0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 1],
+//     [0, 0, 0, 1, 0]];
+
+function calculateRelations() {
+    console.log(`Матриця P`);
+    console.log(matrix.P);
+    console.log(`Матриця Q`);
+    console.log(matrix.Q);
+    console.log(`Матриця R`);
+    console.log(matrix.R);
+
+    let relation = new RelationMatrix();
+
+    let arrayP = new relationArray();
+    let arrayQ = new relationArray();
+    let arrayR = new relationArray();
+    let arrayResult = new relationArray();
+    let date = new Date();
+    let matrixTimeStart = date.getTime();
+
+    let pAndQ = relation.matrixComposition(matrix.P, matrix.Q);
+
+    let d = relation.matrixDuality(matrix.R);
+
+    let k = relation.matrixDifference(pAndQ, d);
+    let matrixTimeEnd = date.getTime();
+    console.log(`Матриця, яка є результатом відношення`);
+    console.log(k);
+
+    console.log(`Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд`);
+
+    arrayP.toArray(matrix.P);
+    arrayQ.toArray(matrix.Q);
+    arrayR.toArray(matrix.R);
+    matrixTimeStart = date.getTime();
+    console.log(`Представлення матриці P у вигляді перетинів:`);
+    console.log(arrayP.getArray());
+    console.log(`Представлення матриці Q у вигляді перетинів:`);
+    console.log(arrayQ.getArray());
+    console.log(`Представлення матриці R у вигляді перетинів:`);
+    console.log(arrayR.getArray());
+
+    arrayResult.toArray(k);
+    console.log(`Представлення результату у вигляді перетинів:`);
+    console.log(arrayResult.getArray());
+    matrixTimeEnd = date.getTime();
+    console.log(`Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд`);
+}
 
 
-console.log(`Матриця P`);
-console.log(matrixP);
-console.log(`Матриця Q`);
-console.log(matrixQ);
-console.log(`Матриця R`);
-console.log(matrixR);
-
-let matrix = new RelationMatrix();
-
-let arrayP = new relationArray();
-let arrayQ = new relationArray();
-let arrayR = new relationArray();
-let arrayResult = new relationArray();
-let date = new Date();
-let matrixTimeStart = date.getTime();
-
-let pAndQ = matrix.matrixComposition(matrixP, matrixQ);
-
-let d = matrix.matrixDuality(matrixR);
-
-let k = matrix.matrixDifference(pAndQ, d);
-let matrixTimeEnd = date.getTime();
-console.log(`Матриця, яка є результатом відношення`);
-console.log(k);
-
-console.log(`Час затрачений на виконання обчислень ${matrixTimeStart-matrixTimeEnd} мілісекунд`);
-
-arrayP.toArray(matrixP);
-arrayQ.toArray(matrixQ);
-arrayR.toArray(matrixR);
-matrixTimeStart = date.getTime();
-console.log(`Представлення матриці P у вигляді перетинів:`);
-console.log(arrayP.getArray());
-console.log(`Представлення матриці Q у вигляді перетинів:`);
-console.log(arrayQ.getArray());
-console.log(`Представлення матриці R у вигляді перетинів:`);
-console.log(arrayR.getArray());
-
-arrayResult.toArray(k);
-console.log(`Представлення результату у вигляді перетинів:`);
-console.log(arrayResult.getArray());
-matrixTimeEnd = date.getTime();
-console.log(`Час затрачений на виконання обчислень ${matrixTimeStart-matrixTimeEnd} мілісекунд`);
