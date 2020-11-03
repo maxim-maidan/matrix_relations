@@ -3,34 +3,27 @@ const getValueById = id => getElementById(id).value;
 let matrixP = [], matrixQ = [], matrixR = [];
 function Matrix() {
     this.P = [];
-    this.R = [];
     this.Q = [];
 }
 let matrix = new Matrix();
 function generateWall() {
     wallSize = getValueById('wallSize');
-    let tableP = ``, tableR = ``, tableQ = ``;
+    let tableP = ``, tableQ = ``;
     for (let j = 0; j < wallSize; j++) {
         matrix.P.push([]);
         matrix.Q.push([]);
-        matrix.R.push([]);
         tableP += `<tr class="table__row"> \n`;
-        tableR += `<tr class="table__row"> \n`;
         tableQ += `<tr class="table__row"> \n`;
         for (let i = 0; i < wallSize; i++) {
             matrix.P[j][i] = 0;
             matrix.Q[j][i] = 0;
-            matrix.R[j][i] = 0;
             tableP += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'P')" id="${j}-${i}-P"></td>`
-            tableR += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'R')" id="${j}-${i}-R"></td>`
             tableQ += `<td class="table__elem" onclick="setActiveElement(${j}, ${i}, 'Q')" id="${j}-${i}-Q"></td>`
         }
         tableP += `</tr>`;
-        tableR += `</tr>`;
         tableQ += `</tr>`;
     }
     getElementById('matrixP').innerHTML = tableP;
-    getElementById('matrixR').innerHTML = tableR;
     getElementById('matrixQ').innerHTML = tableQ;
 }
 function setActiveElement(row, col, mat) {
@@ -47,103 +40,15 @@ function setActiveElement(row, col, mat) {
 }
 class Relation {
     constructor() {
-        this.setMatrix = matrix => this.matrix = matrix;
-        this.getMatrix = () => this.matrix;
-        this.copyMatrix = () => {
-            let matrix = this.matrix;
-            return matrix;
-        };
-        this.clearMatrix = () => this.matrix = [];
-        this.matrixCrossing = (matrixA, matrixB) => {
-            let res = [];
-            matrixA.forEach((elem, indexY) => {
-                elem.forEach((element, indexX) => {
-                    res[indexY][indexX] = element && matrixB[indexY][indexX];
-                });
+        this.isReflexiveRelation = matrix => {
+            let diagonal = [];
+            matrix.forEach((elem, index) => {
+                diagonal.push(elem[index]);
             });
-            return res;
+            return diagonal.every(elem => elem)
         };
-        this.matrixUnification = (matrixA, matrixB) => {
-            let res = [];
-            matrixA.forEach((elem, indexY) => {
-                elem.forEach((element, indexX) => {
-                    res[indexY][indexX] = element || matrixB[indexY][indexX];
-                });
-            });
-            return res;
-        };
-
-        this.matrixDifference = (matrixA, matrixB) => {
-            let res = [];
-            for (let i = 0; i < matrixA.length; i++) {
-                res[i] = [];
-                for (let j = 0; j < matrixA[0].length; j++) {
-                    res[i][j] = +(matrixA[i][j] > matrixB[i][j]);
-                }
-            }
-            return res;
-        };
-        this.matrixSymmetricDifference = (matrixA, matrixB) => {
-            let res = [];
-            matrixA.forEach((elem, indexY) => {
-                elem.forEach((element, indexX) => {
-                    res[indexY][indexX] = element < matrixB[indexY][indexX];
-                });
-            });
-            return res;
-        };
-        this.matrixContain = (matrixA, matrixB) => {
-            return matrixA == matrixB;
-        };
-        this.matrixComposition = (matrixA, matrixB) => {
-            let res = [];
-            for (let i = 0; i < matrixA.length; i++)
-                res[i] = [];
-            for (let k = 0; k < matrixA.length; k++) {
-                for (let i = 0; i < matrixA.length; i++) {
-                    let t = 0;
-                    for (let j = 0; j < matrixA.length; j++)
-                        t += matrixA[i][j] * matrixB[j][k];
-                    res[i][k] = t;
-                }
-            }
-            return res;
-        };
-        this.matrixAddition = matrix => {
-            let res = [];
-            for (let i = 0; i < matrix.length; i++) {
-                res[i] = [];
-                for (let j = 0; j < matrix[0].length; j++) {
-                    res[i][j] = !matrix[i][j];
-                }
-            }
-            return res;
-        };
-        this.matrixTransposition = matrix => {
-            var res = [];
-            for (let i = 0; i < matrix.length; i++) {
-                res[i] = [];
-                for (let j = 0; j < matrix[0].length; j++) {
-                    res[i][j] = matrix[j][i];
-                }
-            }
-            return res;
-        };
-        this.matrixDuality = (matrix) => {
-            matrix = this.matrixTransposition(matrix);
-            matrix = this.matrixAddition(matrix);
-            return matrix;
-        };
-        this.matrixToHtml = matrix => {
-            let resultString = `<p>`;
-            for (let i = 0; i < matrix.length; i++) {
-                for (let j = 0; j < matrix[0].length; j++) {
-                    resultString = resultString + ` ` + matrix[j][i] + ` `;
-                }
-                resultString = resultString + `<br>`;
-            }
-            resultString = resultString + `</p>`;
-            return resultString;
+        this.isSymmetricalRelation = matrix => {
+            return matrix.every((element, i, arr) => element.every((elem, j) => elem == arr[j][i]));
         };
     }
 }
@@ -157,97 +62,50 @@ class RelationMatrix extends Relation {
 class relationArray extends Relation {
     constructor() {
         super();
-        this.array = [];
-        this.setArray = array => this.array = array;
-        this.getArray = () => this.array;
-        this.copyArray = () => {
-            let array = this.array;
-            return array;
-        };
-        this.clearMatrix = () => this.matrix = [];
 
-        this.toMatrix = () => {
-            let matrix = [];
-            this.array.forEach((element) => {
-                matrix[element[0]][element[1]] = 1;
-            });
-            return matrix;
-        };
-        this.toArray = (matrix) => {
-            this.array = [];
-            for (let j = 0; j < matrix.length; j++) {
-                for (let i = 0; i < matrix[0].length; i++) {
-                    if (matrix[j][i] == 1) {
-                        this.array.push([i + 1, j + 1]);
-                    }
-                }
-            }
-        };
-        this.arrayToHtml = () => {
-            let str = `<p>`;
-            this.array.forEach(elem => str = str + elem[0] + ` -> ` + elem[1] + `<br>`);
-            str = str + `</p>`;
-            return str;
-        };
     }
 }
 
-// let matrixP = [[1, 0, 0, 0, 0],
-// [0, 1, 1, 0, 0],
-// [0, 1, 0, 1, 0],
-// [0, 0, 1, 0, 1],
-// [0, 0, 0, 1, 0]],
-
-//     matrixQ = [[0, 1, 0, 0, 0],
-//     [0, 0, 0, 0, 0],
-//     [0, 1, 0, 0, 0],
-//     [0, 0, 0, 1, 0],
-//     [0, 0, 1, 0, 0]],
-
-//     matrixR = [[0, 1, 0, 0, 0],
-//     [0, 0, 1, 1, 1],
-//     [0, 0, 0, 0, 0],
-//     [0, 0, 0, 0, 1],
-//     [0, 0, 0, 1, 0]];
-
 function calculateRelations() {
     let m = new RelationMatrix();
-
-    let arrayP = new relationArray();
-    let arrayQ = new relationArray();
-    let arrayR = new relationArray();
-    let arrayResult = new relationArray();
-    let date = new Date();
-
-    let matrixTimeStart = date.getTime();
-    let pAndQ = m.matrixComposition(matrix.P, matrix.Q);
-    let d = m.matrixDuality(matrix.R);
-    let k = m.matrixDifference(pAndQ, d);
-    let matrixTimeEnd = date.getTime();
-
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Матриця, яка є результатом відношення</p>`
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + m.matrixToHtml(k);
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд</p>`;
-
-    matrixTimeStart = date.getTime(); 
-
-    arrayP.toArray(matrix.P);
-    arrayQ.toArray(matrix.Q);
-    arrayR.toArray(matrix.R);
-    arrayResult.toArray(k);
-
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці P у вигляді перетинів:</p>`;
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayP.arrayToHtml();
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці Q у вигляді перетинів:</p>`;
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayQ.arrayToHtml();
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці R у вигляді перетинів:</p>`;
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayR.arrayToHtml();
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення результату у вигляді перетинів:</p>`;
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayResult.arrayToHtml();
-
-    matrixTimeEnd = date.getTime();
-
-    getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд</p>`;
+    console.log(m.isSymmetricalRelation(matrix.Q));
+    console.log(m.isSymmetricalRelation(matrix.P));
 }
+// function calculateRelations() {
+//     let m = new RelationMatrix();
 
+//     let arrayP = new relationArray();
+//     let arrayQ = new relationArray();
+//     let arrayR = new relationArray();
+//     let arrayResult = new relationArray();
+//     let date = new Date();
+
+//     let matrixTimeStart = date.getTime();
+//     let pAndQ = m.matrixComposition(matrix.P, matrix.Q);
+//     let matrixTimeEnd = date.getTime();
+
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Матриця, яка є результатом відношення</p>`
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + m.matrixToHtml();
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд</p>`;
+
+//     matrixTimeStart = date.getTime(); 
+
+//     arrayP.toArray(matrix.P);
+//     arrayQ.toArray(matrix.Q);
+//     arrayR.toArray(matrix.R);
+//     arrayResult.toArray(k);
+
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці P у вигляді перетинів:</p>`;
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayP.arrayToHtml();
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці Q у вигляді перетинів:</p>`;
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayQ.arrayToHtml();
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення матриці R у вигляді перетинів:</p>`;
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayR.arrayToHtml();
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Представлення результату у вигляді перетинів:</p>`;
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + arrayResult.arrayToHtml();
+
+//     matrixTimeEnd = date.getTime();
+
+//     getElementById('answer').innerHTML = getElementById('answer').innerHTML + `<p>Час затрачений на виконання обчислень ${matrixTimeStart - matrixTimeEnd} мілісекунд</p>`;
+// }
 
