@@ -101,27 +101,27 @@ class Relation {
             for (let j = 0; j < matrixA.length; j++) {
                 for (let i = 0; i < matrixA[0].length; i++) {
                     if (matrixA[j][i] == 1) {
-                        arrayA.push([i, j]);
+                        arrayA.push([j, i]);
                     }
                     if (matrixB[j][i] == 1) {
-                        arrayB.push([i, j]);
+                        arrayB.push([j, i]);
                     }
                 }
             }
-            for (let i = 0; i < arrayA.length; i++){
+            for (let i = 0; i < arrayA.length; i++) {
                 for (let k = 0; k < arrayB.length; k++) {
-                    if(arrayA[i][1] == arrayB[k][0]){
+                    if (arrayA[i][1] == arrayB[k][0]) {
                         res.push([arrayA[i][0], arrayB[k][1]]);
                     }
                 }
             }
-            for(let i = 0; i< matrixA.length; i++){
+            for (let i = 0; i < matrixA.length; i++) {
                 matrix[i] = []
-                for(let j = 0; j< matrixA.length; j++){
+                for (let j = 0; j < matrixA.length; j++) {
                     matrix[i][j] = 0;
                 }
             }
-            for(let i = 0 ; i < res.length; i++){
+            for (let i = 0; i < res.length; i++) {
                 matrix[res[i][0]][res[i][1]] = 1;
             }
 
@@ -152,7 +152,7 @@ class Relation {
             matrix = this.matrixAddition(matrix);
             for (let i = 0; i < matrix.length; i++) {
                 for (let j = 0; j < matrix[0].length; j++) {
-                    matrix[i][j] = +matrix[i][j]; 
+                    matrix[i][j] = +matrix[i][j];
                 }
             }
             return matrix;
@@ -222,13 +222,13 @@ function calculateRelations() {
     [0, 1, 0, 1, 0],
     [0, 0, 1, 0, 1],
     [0, 0, 0, 1, 0]],
-    
+
         matrix.Q = [[0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0],
         [0, 0, 0, 1, 0],
         [0, 0, 1, 0, 0]],
-    
+
         matrix.R = [[0, 1, 0, 0, 0],
         [0, 0, 1, 1, 1],
         [0, 0, 0, 0, 0],
